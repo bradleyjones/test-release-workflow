@@ -29,6 +29,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Get SVU
+        if: "${{ github.event.inputs.tag == '' }}"
         run: go install github.com/bradleyjones/svu@v0.2.0
 
       - name: Calculate tag
@@ -39,5 +40,5 @@ jobs:
       - name: Set manual tag
         if: "${{ github.event.inputs.tag != '' }}"
         run: |
-          echo "${{ github.even.inputs.tag }}"
+          echo ${{ github.even.inputs.tag }}
 
