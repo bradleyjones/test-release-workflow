@@ -32,22 +32,16 @@ jobs:
         if: "${{ github.event.inputs.tag == '' }}"
         run: go install github.com/bradleyjones/svu@v0.2.0
 
-      - name: Calculate pre-release tag
-        if: "${{ github.event.inputs.tag == '' }} && ${{ github.event.inputs.release_type == 'pre-release'}}"
-        run: |
-          echo "TAG_NAME=$(svu prerelease --pre-release alpha)" >> $GITHUB_OUTPUT
-        id: version
-
       - name: Calculate tag
         if: "${{ github.event.inputs.tag == '' }} && ${{ github.event.inputs.release_type == 'final'}}"
         run: |
-          echo "TAG_NAME=$(svu next)" >> $GITHUB_OUTPUT
-        id: version
-
-      - name: Set manual tag
-        if: "${{ github.event.inputs.tag != '' }}"
-        run: |
-          echo "TAG_NAME=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          if [[ "${{ github.event.inputs.tag }}" == "" ]] && [[ "${{ github.event.inputs.release_type }}" == "final" ]]; then
+            echo "TAG_NAME=$(svu next)" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.tag }}" == "" ]] && [[ "${{ github.event.inputs.release_type }}" == "pre-release" ]]; then
+            echo "TAG_NAME=$(svu prerelease --pre-release alpha)" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.tag }}" != "" ]]; then
+            echo "TAG_NAME=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          fi
         id: version
 
       - name: Manual Tag Approval
