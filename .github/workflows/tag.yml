@@ -47,5 +47,20 @@ jobs:
       - name: Set manual tag
         if: "${{ github.event.inputs.tag != '' }}"
         run: |
-          echo ${{ github.event.inputs.tag }}
+          echo "TAG_NAME=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+        id: version
+
+      - name: Manual Tag Approval
+        uses: trstringer/manual-approval@v1.9.0
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: bradleyjones
+          minimum-approvers: 1
+          issue-title: "Creating new tag: ${{ steps.version.outputs.TAG_NAME }}"
+          issue-body: "Please approve or deny the creation of this tag"
+          exclude-workflow-initiator-as-approver: false
+
+      - name: Create the tag
+        run: |
+          echo ${{ steps.version.outputs.TAG_NAME }} Created
 
