@@ -40,5 +40,5 @@ jobs:
       - name: Set manual tag
         if: "${{ github.event.inputs.tag != '' }}"
         run: |
-          echo ${{ github.even.inputs.tag }}
+          echo ${{ github.event.inputs.tag }}
 
