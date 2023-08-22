@@ -1,0 +1,43 @@
+name: Tag
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Is this a pre-release tag or a final release tag'
+        type: choice
+        options:
+          - pre-release
+          - final
+        required: true
+      tag:
+        description: 'Explicitly use this tag over any calculated tags'
+        
+env:
+  GO_VERSION: "1.20.x"
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get SVU
+        run: go install github.com/bradleyjones/svu@v0.2.0
+
+      - name: Calculate tag
+        if: "${{ github.event.inputs.tag == '' }}"
+        run: |
+          echo $(svu pre-release --pre-release alpha)
+
+      - name: Set manual tag
+        if: "${{ github.event.inputs.tag != '' }}"
+        run: |
+          echo "${{ github.even.inputs.tag }}"
+
