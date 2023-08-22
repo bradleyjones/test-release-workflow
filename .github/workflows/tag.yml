@@ -34,7 +34,7 @@ jobs:
       - name: Calculate tag
         if: "${{ github.event.inputs.tag == '' }}"
         run: |
-          echo $(svu pre-release --pre-release alpha)
+          echo $(svu prerelease --pre-release alpha)
 
       - name: Set manual tag
         if: "${{ github.event.inputs.tag != '' }}"
