@@ -32,10 +32,17 @@ jobs:
         if: "${{ github.event.inputs.tag == '' }}"
         run: go install github.com/bradleyjones/svu@v0.2.0
 
-      - name: Calculate tag
-        if: "${{ github.event.inputs.tag == '' }}"
+      - name: Calculate pre-release tag
+        if: "${{ github.event.inputs.tag == '' }} && ${{ github.event.inputs.release_type == 'pre-release'}}"
         run: |
-          echo $(svu prerelease --pre-release alpha)
+          echo "TAG_NAME=$(svu prerelease --pre-release alpha)" >> $GITHUB_OUTPUT
+        id: version
+
+      - name: Calculate tag
+        if: "${{ github.event.inputs.tag == '' }} && ${{ github.event.inputs.release_type == 'final'}}"
+        run: |
+          echo "TAG_NAME=$(svu next)" >> $GITHUB_OUTPUT
+        id: version
 
       - name: Set manual tag
         if: "${{ github.event.inputs.tag != '' }}"
